@@ -6,7 +6,7 @@
 /*   By: magrab <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/18 18:15:27 by magrab            #+#    #+#             */
-/*   Updated: 2018/12/18 21:36:00 by magrab           ###   ########.fr       */
+/*   Updated: 2019/01/18 19:07:59 by magrab           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,52 +15,94 @@
 #include <stdio.h>
 #include <math.h>
 
-void	draw_line(void *win, int x0, int y0, int x1, int y1);
-void	test_draw(void *win, int x, int y);
+typedef struct	s_win{
+	int		sizex;
+	int		sizey;
+	char	*title;
+}				t_win;
 
-void	*g_mlxptr(int setup);
-void	*g_win(int win, int sizex, int sizey, char *win_name);
+void	*g_mlx(int setup)
+{
+	static void *mlx_ptr;
 
-int	deal_key(int key, void *param)
+	if (setup == 1)
+		mlx_ptr = mlx_init();
+	return (mlx_ptr);
+}
+
+#define MAX_WIN 5
+
+void	*g_win(int get, void *param)
+{
+	static void *win_ptr[MAX_WIN];
+	t_win		*win;
+	int			x;
+
+	win = (t_win *)param;
+	if (get > 0 && get <= MAX_WIN)
+	{
+		if (win != 0)
+			win_ptr[get - 1] = mlx_new_window(g_mlx(0), win->sizex, win->sizey, win->title);
+		return (win_ptr[get - 1]);
+	}
+	if (get < 0 && get >= -MAX_WIN)
+	{
+		mlx_destroy_window(g_mlx(0), win_ptr[-get - 1]);
+		win_ptr[-get - 1] = NULL;
+	}
+	x = -1;
+	if (get == 0 && param != NULL)
+		while (++x < MAX_WIN)
+		{
+			get += (param != NULL);
+			if (param == win_ptr[x])
+			{
+				mlx_destroy_window(g_mlx(0), win_ptr[x]);
+				win_ptr[x] = NULL;
+			}
+		}
+	return (NULL);
+}
+
+int	key_hook(int key, void *param)
 {
 	printf("key :%d\n", key);
 
 	if (key == 53) //esc key
 		exit(0);
 	if (key == 50)
-		mlx_clear_window(g_mlxptr(0), param);
+		mlx_clear_window(g_mlx(0), param);
 	return (0);
 }
 
-int deal_mouse(int button, int x, int y, void *win)
+int mouse_hook(int button, int x, int y, void *win)
 {
-	printf("button :%d\n", button);
-
-	test_draw(win,x, y);
+	printf("button :%d\nwin : %p\n", button, win);
+	if (button == 2)
+		mlx_destroy_window(g_mlx(0), win);
 	return (0);
 }
 
 int main()
 {
-	int x;
+	t_win win;
 
-	g_mlxptr(1);
-	if (!g_mlxptr(0))
+	win.sizex = 1000;
+	win.sizey = 750;
+	win.title = "Hello";
+	if (!g_mlx(1))
 		return (-1);
 
-	g_win(-1, 1000, 1000,"Test");
-	g_win(-2, 500, 500,"My Tab");
-	g_win(-3, 200, 200,"Tib");
-
-	//void **test = g_win(0);
-	//*test = mlx_new_window(g_mlxptr(0), 1000, 1000, "Lol");
-
-	x = 0;
-	while (++x < 4)
+	int x = 1;
+	while (x < 3)
 	{
-		mlx_key_hook(g_win(x,0,0,0), deal_key, g_win(x,0,0,0));
-		mlx_mouse_hook(g_win(x,0,0,0), deal_mouse, g_win(x,0,0,0));
+		if (!(g_win(x, &win)))
+			return (-1);
+
+		mlx_key_hook(g_win(x, 0), key_hook, g_win(x, 0));
+		mlx_mouse_hook(g_win(x, 0), mouse_hook, g_win(x, 0));
+		x++;
 	}
-	mlx_loop(g_mlxptr(0));
+	mlx_loop(g_mlx(0));
 	return (0);
 }
