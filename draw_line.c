@@ -6,7 +6,7 @@
 /*   By: magrab <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/18 20:30:03 by magrab            #+#    #+#             */
-/*   Updated: 2018/12/18 20:49:56 by magrab           ###   ########.fr       */
+/*   Updated: 2019/02/13 19:52:33 by magrab           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <math.h>
 
-void	*g_mlxptr(int setup);
+void	*g_mlx(int setup);
 
 void	draw_line(void *win, int x0, int y0, int x1, int y1)
 {
@@ -29,7 +29,7 @@ void	draw_line(void *win, int x0, int y0, int x1, int y1)
 	err = (dx>dy ? dx : -dy);
 	while (x0 != x1 || y0 != y1)
 	{
-		mlx_pixel_put(g_mlxptr, win, x0, y0, 0xFFFFFF);
+		mlx_pixel_put(g_mlx(0), win, x0, y0, 0xFFFFFF);
 		e2 = err;
 		if (e2 > -dx)
 		{

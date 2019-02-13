@@ -6,7 +6,7 @@
 /*   By: magrab <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/18 18:15:27 by magrab            #+#    #+#             */
-/*   Updated: 2019/01/18 19:07:59 by magrab           ###   ########.fr       */
+/*   Updated: 2019/02/13 19:51:13 by magrab           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ void	*g_mlx(int setup)
 		mlx_ptr = mlx_init();
 	return (mlx_ptr);
 }
+
+void test_draw(void *win, int x, int y);
 
 #define MAX_WIN 5
 
@@ -78,6 +80,7 @@ int	key_hook(int key, void *param)
 int mouse_hook(int button, int x, int y, void *win)
 {
 	printf("button :%d\nwin : %p\n", button, win);
+	test_draw(g_win(1, NULL), x, y);
 	if (button == 2)
 		mlx_destroy_window(g_mlx(0), win);
 	return (0);
